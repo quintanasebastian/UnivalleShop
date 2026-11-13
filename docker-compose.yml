@@ -37,5 +37,42 @@ services:
       users-mongodb:
         condition: service_healthy
 
+  catalog-mongodb:
+    image: mongo:8.0
+    container_name: catalog-mongodb
+    restart: unless-stopped
+
+    ports:
+      - "27018:27017"
+
+    volumes:
+      - catalog-mongodb-data:/data/db
+
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  catalog-service:
+    build:
+      context: ./services/catalog-service
+      dockerfile: Dockerfile
+
+    container_name: catalog-service
+    restart: unless-stopped
+
+    ports:
+      - "3002:3002"
+
+    environment:
+      PORT: 3002
+      MONGODB_URI: mongodb://catalog-mongodb:27017/univalle_shop_catalog
+
+    depends_on:
+      catalog-mongodb:
+        condition: service_healthy
+
 volumes:
   users-mongodb-data:
+  catalog-mongodb-data:

@@ -1,0 +1,23 @@
+# Imagen base de Node.js
+FROM node:22-bookworm-slim
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm ci
+
+# Copiar el código fuente
+COPY . .
+
+# Compilar NestJS
+RUN npm run build
+
+# Puerto del microservicio
+EXPOSE 3002
+
+# Ejecutar aplicación
+CMD ["npm", "run", "start:prod"]

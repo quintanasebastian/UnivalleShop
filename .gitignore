@@ -1,0 +1,19 @@
+
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Archivos generados
+dist/
+build/
+coverage/
+
+# Variables y secretos
+.env
+.env.*
+!.env.example
+
+# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db

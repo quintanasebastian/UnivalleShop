@@ -23,12 +23,14 @@ import {
 } from './infrastructure/adapters/bcrypt-password-hasher.adapter.js';
 
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case.js';
+import { LoginUserUseCase } from './application/use-cases/login-user.use-case.js';
 import { FindUserByIdUseCase } from './application/use-cases/find-user-by-id.use-case.js';
 import { FindAllUsersUseCase } from './application/use-cases/find-all-users.use-case.js';
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case.js';
 import { DeactivateUserUseCase } from './application/use-cases/deactivate-user.use-case.js';
 
 import { UsersController } from './presentation/controllers/users.controller.js';
+import { SessionController } from './presentation/controllers/session.controller.js';
 
 @Module({
   imports: [
@@ -40,7 +42,7 @@ import { UsersController } from './presentation/controllers/users.controller.js'
     ]),
   ],
 
-  controllers: [UsersController],
+  controllers: [UsersController, SessionController],
 
   providers: [
     {
@@ -53,6 +55,7 @@ import { UsersController } from './presentation/controllers/users.controller.js'
     },
 
     CreateUserUseCase,
+    LoginUserUseCase,
     FindUserByIdUseCase,
     FindAllUsersUseCase,
     UpdateUserUseCase,

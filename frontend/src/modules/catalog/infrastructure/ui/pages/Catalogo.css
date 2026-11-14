@@ -7,14 +7,16 @@
 }
 
 .encabezado {
-    background: #fff;
-    border-bottom: 1px solid #dedee1;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: linear-gradient(115deg, #95151c, var(--rojo-oscuro) 55%, #bd1b27);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .encabezado-interior {
-    max-width: 1510px;
-    margin: auto;
-    padding: 12px 34px;
+    width: 100%;
+    padding: 12px clamp(1.5rem, 3.5vw, 3.5rem);
     display: flex;
     align-items: center;
     gap: 30px;
@@ -25,7 +27,7 @@
     display: flex;
     align-items: center;
     gap: 9px;
-    color: var(--rojo);
+    color: #ffffff;
     font-size: 25px;
     font-weight: 800;
     white-space: nowrap;
@@ -35,30 +37,38 @@
 .navegacion {
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 11px;
     white-space: nowrap;
 }
 
+.navegacion a,
 .navegacion span {
-    padding: 13px 16px;
-    font-weight: 650;
-    font-size: 14px;
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 8px;
 }
 
 .nav-activo {
-    border-radius: 10px;
     background: var(--rojo);
-    color: white;
+    color: #ffffff;
 }
 
 .nav-inactivo {
-    color: #262626;
+    color: #ffffff;
+}
+
+.navegacion a.nav-inactivo:hover {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .buscador {
     margin-left: auto;
-    border: 1px solid #cfd1d7;
-    background: #fafafa;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: #ffffff;
     border-radius: 12px;
     padding: 10px 14px;
     display: flex;
@@ -86,7 +96,7 @@
 .iconos-usuario>span {
     display: flex;
     align-items: center;
-    color: #212121;
+    color: #ffffff;
 }
 
 .carrito {
@@ -97,8 +107,9 @@
     position: absolute;
     top: -8px;
     right: -8px;
-    background: var(--rojo);
-    color: white;
+    background: #ffffff;
+    color: var(--rojo);
+    font-weight: 800;
     border-radius: 99px;
     font-size: 11px;
     min-width: 17px;
@@ -108,45 +119,40 @@
 }
 
 .banner {
-    background: linear-gradient(115deg, #95151c, var(--rojo-oscuro) 55%, #bd1b27);
-    color: white;
+    background: #ffffff;
+    color: var(--rojo-oscuro);
+    border-bottom: 1px solid var(--borde);
 }
 
 .banner-interior {
-    max-width: 1510px;
-    margin: auto;
-    padding: 28px 36px;
-    min-height: 175px;
+    width: 100%;
+    padding: 14px clamp(1.5rem, 3.5vw, 3.5rem);
+    min-height: 78px;
     display: flex;
     align-items: center;
-    gap: 38px;
+    gap: 22px;
 }
 
 .banner-simbolo {
-    width: 170px;
+    width: 68px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: .65;
-    border-right: 2px solid #ffffff9c;
-    min-height: 100px;
+    color: var(--rojo);
+    border-right: 2px solid #e0e1e5;
+    min-height: 48px;
 }
 
 .banner-texto h1 {
-    margin: 0 0 12px;
-    font-size: clamp(24px, 3vw, 35px);
-    letter-spacing: -.6px;
-}
-
-.banner-texto p {
     margin: 0;
-    font-size: clamp(15px, 1.8vw, 22px);
+    font-size: clamp(20px, 2.2vw, 27px);
+    letter-spacing: -.5px;
+    color: var(--rojo-oscuro);
 }
 
 .contenido {
-    max-width: 1510px;
-    margin: auto;
-    padding: 22px 34px 70px;
+    width: 100%;
+    padding: 24px clamp(1.5rem, 3.5vw, 3.5rem) 70px;
 }
 
 .titulo-seccion {

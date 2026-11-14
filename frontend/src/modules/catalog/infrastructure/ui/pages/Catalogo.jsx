@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  BookOpen, CheckCircle2, ChevronDown, ChevronRight, Filter,
-  GraduationCap, Headphones, Menu, Package, Search, ShoppingBag,
-  ShoppingCart, SlidersHorizontal, UserRound, X,
+  CheckCircle2, ChevronRight, Filter,
+  GraduationCap, Package, Search, ShoppingBag,
+  ShoppingCart, UserRound, X,
 } from 'lucide-react';
-import { obtenerProductos, obtenerProductoPorId } from './services/productsApi.js';
-import './App.css';
+import './Catalogo.css';
 
 const CATEGORIAS = [
   { valor: '', etiqueta: 'Todas' },
@@ -104,8 +103,8 @@ function DetalleProducto({ producto, cargando, error, onCerrar }) {
   );
 }
 
-export default function App() {
-  const [categoria, setCategoria] = useState('');
+export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerProductoPorId }) {
+  const [categoria, setCategoria] = useState(() => CATEGORIAS.some(({ valor }) => valor === categoriaInicial) ? categoriaInicial : '');
   const [busqueda, setBusqueda] = useState('');
   const [minimo, setMinimo] = useState('');
   const [maximo, setMaximo] = useState('');
@@ -136,7 +135,7 @@ export default function App() {
         if (!controller.signal.aborted) setCargando(false);
       });
     return () => controller.abort();
-  }, [categoria, recargar]);
+  }, [categoria, recargar, obtenerProductos]);
 
   useEffect(() => {
     if (!detalleId) return;
@@ -153,7 +152,7 @@ export default function App() {
         if (!controller.signal.aborted) setCargandoDetalle(false);
       });
     return () => controller.abort();
-  }, [detalleId]);
+  }, [detalleId, obtenerProductoPorId]);
 
   const visibles = useMemo(() => {
     const termino = busqueda.trim().toLocaleLowerCase('es');
@@ -180,7 +179,7 @@ export default function App() {
         <div className="encabezado-interior">
           <div className="marca"><ShoppingBag size={30} strokeWidth={1.9} /><span>UnivalleShop</span></div>
           <nav className="navegacion" aria-label="Navegación principal">
-            <span className="nav-inactivo" title="Inicio pendiente de integrar">Inicio</span>
+            <a className="nav-inactivo" href="/inicio">Inicio</a>
             <span className="nav-activo" aria-current="page">Catálogo</span>
             <span className="nav-inactivo" title="Pedidos pendientes de integrar">Mis pedidos</span>
           </nav>
@@ -194,10 +193,9 @@ export default function App() {
 
       <section className="banner" aria-label="Bienvenida a UnivalleShop">
         <div className="banner-interior">
-          <div className="banner-simbolo"><GraduationCap size={72} strokeWidth={1.2} /></div>
+          <div className="banner-simbolo"><GraduationCap size={42} strokeWidth={1.4} /></div>
           <div className="banner-texto">
-            <h1>Encuentra lo que necesitas en UnivalleShop</h1>
-            <p>Compra y vende dentro de nuestra comunidad universitaria.</p>
+            <h1>Encuentra lo que necesitas</h1>
           </div>
         </div>
       </section>

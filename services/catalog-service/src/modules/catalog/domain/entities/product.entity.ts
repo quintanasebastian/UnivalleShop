@@ -10,6 +10,8 @@ export const PRODUCT_CATEGORIES = [
 
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
 
+export const MAX_STOCK_MOVEMENT = 1000;
+
 export interface ProductData {
   id: string;
   nombre: string;
@@ -103,6 +105,31 @@ export class Product {
     return Number.isInteger(quantity) && quantity > 0 && this.stock >= quantity;
   }
 
+  ensureStock(quantity: number): void {
+    if (!this.hasStock(quantity)) {
+      throw new InsufficientStockError(
+        `Stock insuficiente para "${this.nombre}". Disponible: ${this.stock}.`,
+      );
+    }
+  }
+
+  decreaseStock(quantity: number): void {
+    this.ensureStock(quantity);
+    this.stock -= quantity;
+    this.updatedAt = new Date();
+  }
+
+  increaseStock(quantity: number): void {
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new InvalidProductError(
+        'La cantidad a devolver debe ser un entero mayor a cero.',
+      );
+    }
+
+    this.stock += quantity;
+    this.updatedAt = new Date();
+  }
+
   private validate(): void {
     if (!this.nombre || this.nombre.length < 2 || this.nombre.length > 120) {
       throw new InvalidProductError(
@@ -158,5 +185,12 @@ export class ProductAlreadyExistsError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'ProductAlreadyExistsError';
+  }
+}
+
+export class InsufficientStockError extends Error {
+  constructor(message = 'Stock insuficiente para el producto.') {
+    super(message);
+    this.name = 'InsufficientStockError';
   }
 }

@@ -43,11 +43,19 @@ src/modules/catalog/
 | `GET`    | `/products?categoria=tecnologia`       | Listar productos por categoría             |
 | `GET`    | `/products/:id`                        | Obtener un producto por id                 |
 | `PATCH`  | `/products/:id`                        | Actualizar un producto                     |
+| `PATCH`  | `/products/:id/stock`                  | Descontar stock de forma atómica (`cantidad`) |
+| `PATCH`  | `/products/:id/stock/restore`          | Devolver stock al catálogo (`cantidad`)    |
 | `DELETE` | `/products/:id`                        | Eliminar un producto                       |
 
 ### Categorías válidas
 
 `tecnologia`, `libros`, `papeleria`, `ropa`, `accesorios`, `hogar`, `otros`.
+
+### Movimientos de stock
+
+`PATCH /products/:id/stock` recibe `{ "cantidad": 2 }` y responde `200` con el producto actualizado. El descuento es atómico (`stock >= cantidad` + `$inc`), por lo que nunca queda stock negativo ni se sobrevende aunque lleguen peticiones concurrentes. Si no hay suficiente stock responde `409`; si el producto no existe, `404`.
+
+`PATCH /products/:id/stock/restore` recibe el mismo cuerpo y devuelve unidades al stock (se usa para compensar pedidos cancelados o pagos fallidos).
 
 ### Ejemplo de creación
 

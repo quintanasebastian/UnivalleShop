@@ -8,7 +8,7 @@ npm.cmd run dev
 ```
 
 Abre http://localhost:5173. **Regístrate** muestra el formulario de registro.
-El catálogo carga los productos del microservicio de Catálogo (puerto 3002).
+El catálogo carga los productos del microservicio de Catálogo (puerto 3002) y permite agregarlos al carrito del microservicio de Pedidos (puerto 3003), también accesible desde “Carrito” y “Mis pedidos”.
 
 El registro llama a `POST /users` en el microservicio de Usuarios (puerto 3001).
 Para iniciar sesión y acceder a las áreas privadas, el servicio expone `POST`, `GET` y `DELETE /sesion`.
@@ -20,12 +20,20 @@ Para iniciar sesión y acceder a las áreas privadas, el servicio expone `POST`,
   el puerto AuthPort, los casos de uso y los adaptadores React y HTTP.
 - `src/modules/catalog` contiene el modelo de producto, el puerto ProductRepository,
   las consultas de catálogo y detalle, y sus adaptadores React y HTTP.
+- `src/modules/orders` contiene el modelo de carrito/pedido, el puerto OrdersPort,
+  los casos de uso del carrito y los pedidos, el adaptador HTTP y las páginas
+  “Carrito” y “Mis pedidos”.
 - `src/shared` contiene el cliente HTTP y los componentes reutilizables.
 
 React recibe las operaciones desde la composición en app. Los casos de uso
 reciben un puerto, y los adaptadores HTTP implementan ese contrato. Los servicios
 de Usuarios y Catálogo conservan sus APIs y bases independientes. El frontend
-se compila como una sola aplicación.
+se compila como una sola aplicación. Pedidos usa la misma cookie de sesión de Usuarios.
+
+La ruta base de Pedidos se controla con `VITE_ORDERS_API_URL` (por defecto
+`/api/pedidos`, resuelto por el proxy de Vite hacia `http://localhost:3003`).
+Copia `.env.example` como `.env` para cambiarla, por ejemplo a
+`http://localhost:3003` si se llama directamente al microservicio.
 
 Ejecuta `npm.cmd run typecheck` para comprobar los archivos TypeScript y
 `npm.cmd run build` para compilar la aplicación.

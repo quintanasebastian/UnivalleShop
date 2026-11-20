@@ -119,6 +119,40 @@ export class ProductMongoRepositoryAdapter implements ProductRepository {
     );
   }
 
+  async decrementStock(id: string, cantidad: number): Promise<Product | null> {
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    // La condición stock >= cantidad y el $inc ocurren en una sola operación:
+    // dos checkout concurrentes no pueden sobrevender el mismo producto.
+    const document = await this.productModel
+      .findOneAndUpdate(
+        { _id: new Types.ObjectId(id), stock: { $gte: cantidad } },
+        { $inc: { stock: -cantidad } },
+        { new: true, runValidators: true },
+      )
+      .exec();
+
+    return document ? this.toDomain(document as ProductMongoDocument) : null;
+  }
+
+  async incrementStock(id: string, cantidad: number): Promise<Product | null> {
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const document = await this.productModel
+      .findOneAndUpdate(
+        { _id: new Types.ObjectId(id) },
+        { $inc: { stock: cantidad } },
+        { new: true, runValidators: true },
+      )
+      .exec();
+
+    return document ? this.toDomain(document as ProductMongoDocument) : null;
+  }
+
   async delete(id: string): Promise<void> {
     if (!Types.ObjectId.isValid(id)) {
       throw new ProductNotFoundError();

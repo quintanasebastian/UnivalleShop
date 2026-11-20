@@ -67,7 +67,16 @@ function TarjetaProducto({ producto, onVer }) {
   );
 }
 
-function DetalleProducto({ producto, cargando, error, onCerrar }) {
+function DetalleProducto({ producto, cargando, error, onCerrar, onAgregar }) {
+  const [cantidad, setCantidad] = useState(1);
+  const [agregando, setAgregando] = useState(false);
+  const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+    setCantidad(1);
+    setMensaje('');
+  }, [producto?.id ?? producto?._id]);
+
   useEffect(() => {
     function cerrarConEscape(evento) {
       if (evento.key === 'Escape') onCerrar();
@@ -75,6 +84,24 @@ function DetalleProducto({ producto, cargando, error, onCerrar }) {
     window.addEventListener('keydown', cerrarConEscape);
     return () => window.removeEventListener('keydown', cerrarConEscape);
   }, [onCerrar]);
+
+  async function agregar() {
+    setAgregando(true);
+    setMensaje('');
+    try {
+      await onAgregar({
+        productoId: producto.id ?? producto._id,
+        nombre: producto.nombre,
+        precioUnitario: producto.precio,
+        cantidad,
+      });
+      setMensaje('Producto agregado al carrito.');
+    } catch (fallo) {
+      setMensaje(fallo.message);
+    } finally {
+      setAgregando(false);
+    }
+  }
 
   return (
     <div className="modal-fondo" onMouseDown={(e) => { if (e.target === e.currentTarget) onCerrar(); }}>
@@ -94,7 +121,23 @@ function DetalleProducto({ producto, cargando, error, onCerrar }) {
               <p className={`estado ${producto.stock > 0 ? 'disponible' : 'agotado'}`}>
                 {producto.stock > 0 ? 'Disponible' : 'Agotado'}
               </p>
-              <p className="nota-funcion">La integración con el carrito estará disponible cuando el servicio de pedidos esté conectado.</p>
+              {producto.stock > 0 && (
+                <div className="detalle-carrito">
+                  <label htmlFor="cantidad-carrito">Cantidad</label>
+                  <input
+                    id="cantidad-carrito"
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={cantidad}
+                    onChange={(evento) => setCantidad(Number(evento.target.value))}
+                  />
+                  <button className="boton-rojo" type="button" disabled={agregando} onClick={agregar}>
+                    {agregando ? 'Agregando…' : 'Agregar al carrito'}
+                  </button>
+                  {mensaje && <p role="status">{mensaje}</p>}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -103,7 +146,7 @@ function DetalleProducto({ producto, cargando, error, onCerrar }) {
   );
 }
 
-export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerProductoPorId }) {
+export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerProductoPorId, obtenerCarrito, agregarAlCarrito }) {
   const [categoria, setCategoria] = useState(() => CATEGORIAS.some(({ valor }) => valor === categoriaInicial) ? categoriaInicial : '');
   const [busqueda, setBusqueda] = useState('');
   const [minimo, setMinimo] = useState('');
@@ -118,6 +161,7 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
   const [detalle, setDetalle] = useState(null);
   const [detalleError, setDetalleError] = useState('');
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [carrito, setCarrito] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -154,6 +198,23 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
     return () => controller.abort();
   }, [detalleId, obtenerProductoPorId]);
 
+  useEffect(() => {
+    const control = new AbortController();
+    obtenerCarrito(control.signal)
+      .then((respuesta) => {
+        if (!control.signal.aborted) setCarrito(respuesta);
+      })
+      .catch(() => {});
+    return () => control.abort();
+  }, [obtenerCarrito]);
+
+  async function agregarAlCarritoDesdeDetalle(producto) {
+    await agregarAlCarrito(producto);
+    setCarrito(await obtenerCarrito());
+  }
+
+  const unidadesCarrito = carrito?.items.reduce((total, item) => total + item.cantidad, 0) ?? 0;
+
   const visibles = useMemo(() => {
     const termino = busqueda.trim().toLocaleLowerCase('es');
     const min = minimo === '' ? null : Number(minimo);
@@ -181,12 +242,15 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
           <nav className="navegacion" aria-label="Navegación principal">
             <a className="nav-inactivo" href="/inicio">Inicio</a>
             <span className="nav-activo" aria-current="page">Catálogo</span>
-            <span className="nav-inactivo" title="Pedidos pendientes de integrar">Mis pedidos</span>
+            <a className="nav-inactivo" href="/pedidos">Mis pedidos</a>
           </nav>
           <label className="buscador"><Search size={21} /><input type="search" placeholder="Buscar productos..." aria-label="Buscar productos" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} /></label>
           <div className="iconos-usuario">
             <span title="Perfil pendiente de integrar" aria-label="Perfil pendiente de integrar"><UserRound size={25} /></span>
-            <span title="Carrito pendiente de integrar" aria-label="Carrito pendiente de integrar" className="carrito"><ShoppingCart size={26} /><span className="carrito-numero">0</span></span>
+            <a href="/carrito" className="carrito" aria-label={`Carrito, ${unidadesCarrito} productos`} draggable={false}>
+              <ShoppingCart size={26} />
+              <span className="carrito-numero">{unidadesCarrito}</span>
+            </a>
           </div>
         </div>
       </header>
@@ -246,7 +310,7 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
           </section>
         </div>
       </main>
-      {detalleId && <DetalleProducto producto={detalle} cargando={cargandoDetalle} error={detalleError} onCerrar={() => setDetalleId(null)} />}
+      {detalleId && <DetalleProducto producto={detalle} cargando={cargandoDetalle} error={detalleError} onCerrar={() => setDetalleId(null)} onAgregar={agregarAlCarritoDesdeDetalle} />}
     </>
   );
 }

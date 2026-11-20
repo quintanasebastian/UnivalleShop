@@ -11,8 +11,10 @@ import { ProductMongoRepositoryAdapter } from './infrastructure/adapters/product
 import { PRODUCT_REPOSITORY } from './domain/ports/repositories/product.repository.js';
 
 import { CreateProductUseCase } from './application/use-cases/create-product.use-case.js';
+import { DecreaseProductStockUseCase } from './application/use-cases/decrease-product-stock.use-case.js';
 import { FindAllProductsUseCase } from './application/use-cases/find-all-products.use-case.js';
 import { FindProductByIdUseCase } from './application/use-cases/find-product-by-id.use-case.js';
+import { RestoreProductStockUseCase } from './application/use-cases/restore-product-stock.use-case.js';
 import { UpdateProductUseCase } from './application/use-cases/update-product.use-case.js';
 import { DeleteProductUseCase } from './application/use-cases/delete-product.use-case.js';
 
@@ -41,6 +43,8 @@ import { ProductsController } from './presentation/controllers/products.controll
     FindProductByIdUseCase,
     UpdateProductUseCase,
     DeleteProductUseCase,
+    DecreaseProductStockUseCase,
+    RestoreProductStockUseCase,
   ],
 
   exports: [PRODUCT_REPOSITORY],

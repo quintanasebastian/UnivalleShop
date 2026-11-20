@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 
 import {
+  InsufficientStockError,
   InvalidProductError,
   PRODUCT_CATEGORIES,
   ProductAlreadyExistsError,
@@ -24,11 +25,14 @@ import {
 import type { ProductCategory } from '../../domain/entities/product.entity.js';
 
 import { CreateProductUseCase } from '../../application/use-cases/create-product.use-case.js';
+import { DecreaseProductStockUseCase } from '../../application/use-cases/decrease-product-stock.use-case.js';
 import { DeleteProductUseCase } from '../../application/use-cases/delete-product.use-case.js';
 import { FindAllProductsUseCase } from '../../application/use-cases/find-all-products.use-case.js';
 import { FindProductByIdUseCase } from '../../application/use-cases/find-product-by-id.use-case.js';
+import { RestoreProductStockUseCase } from '../../application/use-cases/restore-product-stock.use-case.js';
 import { UpdateProductUseCase } from '../../application/use-cases/update-product.use-case.js';
 
+import { AdjustStockDto } from '../dto/adjust-stock.dto.js';
 import { CreateProductDto } from '../dto/create-product.dto.js';
 import { UpdateProductDto } from '../dto/update-product.dto.js';
 
@@ -40,6 +44,8 @@ export class ProductsController {
     private readonly findProductByIdUseCase: FindProductByIdUseCase,
     private readonly updateProductUseCase: UpdateProductUseCase,
     private readonly deleteProductUseCase: DeleteProductUseCase,
+    private readonly decreaseProductStockUseCase: DecreaseProductStockUseCase,
+    private readonly restoreProductStockUseCase: RestoreProductStockUseCase,
   ) {}
 
   private handleError(error: unknown): never {
@@ -47,7 +53,10 @@ export class ProductsController {
       throw new NotFoundException(error.message);
     }
 
-    if (error instanceof ProductAlreadyExistsError) {
+    if (
+      error instanceof ProductAlreadyExistsError ||
+      error instanceof InsufficientStockError
+    ) {
       throw new ConflictException(error.message);
     }
 
@@ -101,6 +110,24 @@ export class ProductsController {
   async update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     try {
       return await this.updateProductUseCase.execute(id, dto);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  @Patch(':id/stock')
+  async decreaseStock(@Param('id') id: string, @Body() dto: AdjustStockDto) {
+    try {
+      return await this.decreaseProductStockUseCase.execute(id, dto.cantidad);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  @Patch(':id/stock/restore')
+  async restoreStock(@Param('id') id: string, @Body() dto: AdjustStockDto) {
+    try {
+      return await this.restoreProductStockUseCase.execute(id, dto.cantidad);
     } catch (error) {
       this.handleError(error);
     }

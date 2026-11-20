@@ -34,6 +34,12 @@ export default function Inicio({ perfil, cerrarSesion }) {
           <a href="/catalogo" draggable={false}>
             Catálogo
           </a>
+          <a href="/pedidos" draggable={false}>
+            Mis pedidos
+          </a>
+          <a href="/carrito" draggable={false}>
+            Carrito
+          </a>
         </nav>
 
         <button type="button" onClick={salir}>

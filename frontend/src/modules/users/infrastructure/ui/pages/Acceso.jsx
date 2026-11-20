@@ -1,19 +1,18 @@
-import { useRef, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import Marca from '../../../../../shared/ui/Marca.jsx';
+import './Acceso.css';
 
 export default function Acceso({ registro = false, enviarDatos }) {
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState('');
   const [ocupado, setOcupado] = useState(false);
-  const pantalla = useRef(null);
+  const titulo = registro ? 'Crear cuenta' : 'Iniciar sesión';
+  const cuentaCreada = !registro && new URLSearchParams(window.location.search).get('registro') === 'ok';
 
-  function moverCurva(evento) {
-    if (evento.pointerType !== 'mouse' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const caja = pantalla.current.getBoundingClientRect();
-    pantalla.current.style.setProperty('--curva-x', `${(evento.clientX - caja.left) / caja.width * 22}px`);
-    pantalla.current.style.setProperty('--curva-y', `${37 + (evento.clientY - caja.top) / caja.height * 22}%`);
-  }
+  useEffect(() => {
+    document.title = `${titulo} | UnivalleShop`;
+  }, [titulo]);
 
   async function enviar(evento) {
     evento.preventDefault();
@@ -31,45 +30,107 @@ export default function Acceso({ registro = false, enviarDatos }) {
   }
 
   return (
-    <main className="tienda-login" ref={pantalla} onPointerMove={moverCurva} onPointerLeave={() => {
-      pantalla.current.style.removeProperty('--curva-x');
-      pantalla.current.style.removeProperty('--curva-y');
-    }}>
-      <div className="tienda-login-fondo" aria-hidden="true" />
-      <div className="tienda-login-marca"><Marca /></div>
-      <form className="tienda-login-form" onSubmit={enviar}>
-        <h1>{registro ? 'Crear cuenta' : 'Iniciar sesión'}</h1>
-        <p>Ingresa con tu correo institucional de Univalle.</p>
-        {!registro && new URLSearchParams(location.search).get('registro') === 'ok' && <p role="status">Cuenta creada. Ya puedes iniciar sesión.</p>}
-        {registro && <>
-          <label htmlFor="nombres">Nombres</label>
-          <input id="nombres" name="nombres" autoComplete="given-name" minLength={2} required />
-          <label htmlFor="apellidos">Apellidos</label>
-          <input id="apellidos" name="apellidos" autoComplete="family-name" minLength={2} required />
-        </>}
-        <label htmlFor="correo">Correo institucional</label>
-        <input id="correo" name="correo" type="email" autoComplete="username" required />
-        <label htmlFor="clave">Contraseña{registro && ' (mínimo 8 caracteres)'}</label>
-        <div className="tienda-clave">
-          <input id="clave" name="password" type={visible ? 'text' : 'password'} autoComplete={registro ? 'new-password' : 'current-password'} minLength={registro ? 8 : undefined} required />
-          <button type="button" aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'} onClick={() => setVisible(!visible)}>
-            {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
-          </button>
+    <div className="acceso">
+      <header className="acceso-cabecera">
+        <div className="acceso-institucional">
+          <img src="/interfaz/firma-universidad-del-valle.png" alt="Universidad del Valle" width="424" height="52" />
         </div>
-        {registro && <>
-          <label htmlFor="tipo">Tipo de usuario</label>
-          <select id="tipo" name="tipoUsuario" required defaultValue="">
-            <option value="" disabled>Selecciona una opción</option>
-            <option value="estudiante">Estudiante</option>
-            <option value="docente">Docente</option>
-            <option value="administrativo">Administrativo</option>
-          </select>
-        </>}
-        {error && <p role="alert">{error}</p>}
-        <button className="tienda-entrar" disabled={ocupado}>{ocupado ? 'Espera un momento…' : registro ? 'Crear cuenta' : 'Iniciar sesión'}</button>
-        <p>{registro ? '¿Ya tienes cuenta? ' : '¿Aún no tienes cuenta? '}<a href={registro ? '/' : '/registro'}>{registro ? 'Inicia sesión' : 'Regístrate'}</a></p>
-      </form>
-    </main>
+      </header>
+
+      <main className="acceso-contenido">
+        <section className="acceso-panel" aria-labelledby="acceso-titulo" tabIndex={0}>
+          <div className="acceso-interior">
+            <Marca />
+            <h1 id="acceso-titulo">{titulo}</h1>
+            <p className="acceso-intro">
+              {registro ? 'Regístrate con tu correo institucional de Univalle.' : 'Ingresa con tu correo institucional de Univalle.'}
+            </p>
+
+            {cuentaCreada && (
+              <p className="acceso-aviso acceso-aviso-exito" role="status">
+                <CheckCircle2 aria-hidden="true" /> Cuenta creada. Ya puedes iniciar sesión.
+              </p>
+            )}
+
+            <form className="acceso-formulario" onSubmit={enviar}>
+              {registro && (
+                <div className="acceso-nombre">
+                  <div className="acceso-campo">
+                    <label htmlFor="nombres">Nombres</label>
+                    <input id="nombres" name="nombres" autoComplete="given-name" minLength={2} required />
+                  </div>
+                  <div className="acceso-campo">
+                    <label htmlFor="apellidos">Apellidos</label>
+                    <input id="apellidos" name="apellidos" autoComplete="family-name" minLength={2} required />
+                  </div>
+                </div>
+              )}
+
+              <div className="acceso-campo">
+                <label htmlFor="correo">Correo institucional</label>
+                <input id="correo" name="correo" type="email" autoComplete="username" placeholder="usuario@correounivalle.edu.co" required />
+              </div>
+
+              <div className="acceso-campo">
+                <label htmlFor="clave">Contraseña</label>
+                <div className="acceso-clave">
+                  <input
+                    id="clave"
+                    name="password"
+                    type={visible ? 'text' : 'password'}
+                    autoComplete={registro ? 'new-password' : 'current-password'}
+                    minLength={registro ? 8 : undefined}
+                    aria-describedby={registro ? 'acceso-clave-ayuda' : undefined}
+                    required
+                  />
+                  <button type="button" aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'} onClick={() => setVisible(!visible)}>
+                    {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+                  </button>
+                </div>
+                {registro && <small id="acceso-clave-ayuda">Mínimo 8 caracteres.</small>}
+              </div>
+
+              {registro && (
+                <div className="acceso-campo">
+                  <label htmlFor="tipo">Tipo de usuario</label>
+                  <select id="tipo" name="tipoUsuario" required defaultValue="">
+                    <option value="" disabled>Selecciona una opción</option>
+                    <option value="estudiante">Estudiante</option>
+                    <option value="docente">Docente</option>
+                    <option value="administrativo">Administrativo</option>
+                  </select>
+                </div>
+              )}
+
+              {error && (
+                <p className="acceso-aviso acceso-aviso-error" role="alert">
+                  <AlertCircle aria-hidden="true" /> {error}
+                </p>
+              )}
+
+              <button className="tienda-accion acceso-enviar" type="submit" disabled={ocupado}>
+                {ocupado ? 'Espera un momento…' : titulo}
+                {!ocupado && <ArrowRight aria-hidden="true" />}
+              </button>
+            </form>
+
+            <p className="acceso-alternativa">
+              {registro ? '¿Ya tienes cuenta? ' : '¿Aún no tienes cuenta? '}
+              <a href={registro ? '/' : '/registro'}>{registro ? 'Inicia sesión' : 'Regístrate'}</a>
+            </p>
+          </div>
+        </section>
+
+        <img
+          className="acceso-imagen"
+          src="/interfaz/ardillaunivalle.png"
+          alt="Ardilla de UnivalleShop con bolsas de compras y artículos universitarios"
+          width="900"
+          height="1125"
+          loading="lazy"
+        />
+      </main>
+    </div>
   );
 }
 

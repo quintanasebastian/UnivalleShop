@@ -1,115 +1,22 @@
-.tienda-login,
-.tienda-inicio {
+:root:has(.tienda-privada, .acceso) {
+  scrollbar-gutter: stable;
+}
+
+body:has(.tienda-privada, .acceso) {
+  min-width: 0;
+}
+
+.tienda-privada,
+.acceso {
   --rojo: #C20E1A;
   --oscuro: #841F1C;
   --gris: #636363;
-  --claro: #CFCFCF;
-}
 
-/* Inicio de sesión y registro */
-
-.tienda-login {
-  position: relative;
   min-height: 100svh;
-  isolation: isolate;
-  overflow: hidden;
-  display: grid;
-  align-items: center;
-  background: var(--rojo);
-  color: var(--claro);
-}
-
-.tienda-login-fondo {
-  position: absolute;
-  inset: 0 0 0 33%;
-  z-index: -2;
-  background: center / cover no-repeat url('/interfaz/campus.webp');
-}
-
-.tienda-login::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -17% 53% -17% -24px;
-  background: var(--rojo);
-  border-radius: 0 21% 25% 0 / 0 var(--curva-y, 44%) calc(100% - var(--curva-y, 44%)) 0;
-  transform: translateX(var(--curva-x, 0px));
-  transition: transform 450ms ease-out, border-radius 450ms ease-out;
-}
-
-.tienda-login-form {
-  width: min(36%, 510px);
-  margin: 3rem 0 3rem clamp(1.25rem, 4vw, 5rem);
-  display: grid;
-  gap: .85rem;
-}
-
-.tienda-login h1 {
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  line-height: 1;
-  margin: 0;
-}
-
-.tienda-login p {
-  margin: .25rem 0 1rem;
-}
-
-.tienda-login label {
-  font-weight: 700;
-}
-
-.tienda-login input,
-.tienda-login select,
-.tienda-entrar {
-  width: 100%;
-  min-height: 3.25rem;
-  padding: .75rem 1rem;
-  border: 0;
-  border-radius: .5rem;
-  background: var(--claro);
-  color: var(--oscuro);
-}
-
-.tienda-login :focus-visible {
-  outline-color: var(--claro);
-}
-
-.tienda-clave {
-  position: relative;
-}
-
-.tienda-clave input {
-  padding-right: 3.5rem;
-}
-
-.tienda-clave button {
-  position: absolute;
-  right: .25rem;
-  top: 0;
-  height: 100%;
-  width: 3rem;
-  border: 0;
-  background: transparent;
-  color: var(--gris);
-}
-
-.tienda-entrar {
-  margin-top: .85rem;
-  font-weight: 750;
-}
-
-.tienda-login-form a {
-  color: inherit;
-  font-weight: 700;
-}
-
-.tienda-login-marca {
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  padding: .65rem .85rem;
-  background: var(--oscuro);
-  border-radius: .5rem;
+  background: #f3f4f6;
+  color: #242424;
+  display: flex;
+  flex-direction: column;
 }
 
 .tienda-marca,
@@ -125,33 +32,27 @@
   font-weight: 800;
 }
 
-/* Inicio */
-
-.tienda-inicio {
-  min-height: 100svh;
-  background: #f3f4f6;
-  color: #242424;
-  display: flex;
-  flex-direction: column;
+.tienda-barra,
+.acceso-cabecera {
+  background: linear-gradient(115deg, #95151c, var(--oscuro) 55%, #bd1b27);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .tienda-barra {
   position: sticky;
   top: 0;
   z-index: 50;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
+  gap: .625rem clamp(.75rem, 2vw, 2rem);
   min-height: 82px;
   padding: 12px clamp(1.5rem, 3.5vw, 3.5rem);
-  background: linear-gradient(115deg, #95151c, var(--oscuro) 55%, #bd1b27);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.tienda-barra>a:first-child {
-  margin-right: auto;
-  font-size: 1.55rem;
+.tienda-barra-marca {
+  justify-self: start;
+  white-space: nowrap;
 }
 
 .tienda-barra nav {
@@ -172,9 +73,12 @@
 
 .tienda-barra nav a,
 .tienda-barra button {
+  justify-content: center;
+  min-height: 44px;
   padding: .65rem 1rem;
   border-radius: .5rem;
   transition: background-color 180ms ease;
+  white-space: nowrap;
 }
 
 .tienda-barra nav a[aria-current="page"] {
@@ -189,18 +93,99 @@
 }
 
 .tienda-barra button {
+  justify-self: end;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(0, 0, 0, 0.2);
 }
 
-.tienda-barra button:hover {
+.tienda-barra button:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.35);
   text-decoration: none;
+}
+
+.tienda-barra button:disabled {
+  opacity: .7;
+}
+
+.tienda-barra button svg {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .tienda-barra :focus-visible {
   outline-color: #ffffff;
 }
+
+.tienda-conteo {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.3rem;
+  border-radius: 1rem;
+  background: #fff;
+  color: var(--oscuro);
+  font-size: .6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tienda-error-sesion {
+  margin: 1rem clamp(1.5rem, 3.5vw, 3.5rem) 0;
+  padding: .75rem 1rem;
+  border-radius: .5rem;
+  background: #fbecee;
+  color: var(--oscuro);
+}
+
+@media (max-width: 56rem) {
+  .tienda-barra {
+    grid-template-columns: 1fr auto;
+    padding-inline: clamp(.75rem, 3.5vw, 2rem);
+  }
+
+  .tienda-barra nav {
+    grid-area: 2 / 1 / 3 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-self: center;
+    width: min(100%, 31rem);
+  }
+
+  .tienda-barra button {
+    grid-area: 1 / 2;
+  }
+}
+
+@media (max-width: 34rem) {
+  .tienda-barra .tienda-marca {
+    font-size: 1.1rem;
+  }
+
+  .tienda-barra nav {
+    gap: .125rem;
+  }
+
+  .tienda-barra nav a,
+  .tienda-barra button {
+    gap: .25rem;
+    font-size: .8125rem;
+  }
+
+  .tienda-barra nav a {
+    padding-inline: .25rem;
+  }
+
+  .tienda-barra button {
+    padding-inline: .375rem;
+  }
+
+  .tienda-conteo {
+    width: 1.45rem;
+  }
+}
+
+/* Inicio */
 
 .tienda-portada {
   flex: 1;
@@ -376,11 +361,7 @@
   color: var(--rojo);
 }
 
-.encabezado .navegacion a {
-  text-decoration: none;
-}
-
-/* Pantallas pequeñas y movimiento reducido */
+/* Pantallas pequeñas */
 
 @media (max-width: 1050px) {
   .tienda-categorias>div {
@@ -399,40 +380,8 @@
   }
 }
 
-@media (max-width: 700px) {
-  .tienda-login {
-    padding-bottom: 7rem;
-  }
-
-  .tienda-login-fondo {
-    inset: auto 0 0;
-    height: 9rem;
-  }
-
-  .tienda-login::before {
-    inset: 0 0 7rem;
-    border-radius: 0 0 25% 0 / 0 0 8% 0;
-    transform: none;
-  }
-
-  .tienda-login-form {
-    width: auto;
-    margin: 2rem 1.25rem;
-  }
-}
-
 @media (max-width: 560px) {
   .tienda-categorias>div {
     grid-template-columns: 1fr;
-  }
-
-  .tienda-barra {
-    gap: .65rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tienda-login::before {
-    transition: none;
   }
 }

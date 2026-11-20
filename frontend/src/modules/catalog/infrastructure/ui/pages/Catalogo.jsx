@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle2, ChevronRight, Filter,
-  GraduationCap, Package, Search, ShoppingBag,
-  ShoppingCart, UserRound, X,
+  GraduationCap, Package, Search, X,
 } from 'lucide-react';
 import './Catalogo.css';
 
@@ -146,7 +145,7 @@ function DetalleProducto({ producto, cargando, error, onCerrar, onAgregar }) {
   );
 }
 
-export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerProductoPorId, obtenerCarrito, agregarAlCarrito }) {
+export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerProductoPorId, agregarAlCarrito }) {
   const [categoria, setCategoria] = useState(() => CATEGORIAS.some(({ valor }) => valor === categoriaInicial) ? categoriaInicial : '');
   const [busqueda, setBusqueda] = useState('');
   const [minimo, setMinimo] = useState('');
@@ -161,7 +160,6 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
   const [detalle, setDetalle] = useState(null);
   const [detalleError, setDetalleError] = useState('');
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
-  const [carrito, setCarrito] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -198,23 +196,6 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
     return () => controller.abort();
   }, [detalleId, obtenerProductoPorId]);
 
-  useEffect(() => {
-    const control = new AbortController();
-    obtenerCarrito(control.signal)
-      .then((respuesta) => {
-        if (!control.signal.aborted) setCarrito(respuesta);
-      })
-      .catch(() => {});
-    return () => control.abort();
-  }, [obtenerCarrito]);
-
-  async function agregarAlCarritoDesdeDetalle(producto) {
-    await agregarAlCarrito(producto);
-    setCarrito(await obtenerCarrito());
-  }
-
-  const unidadesCarrito = carrito?.items.reduce((total, item) => total + item.cantidad, 0) ?? 0;
-
   const visibles = useMemo(() => {
     const termino = busqueda.trim().toLocaleLowerCase('es');
     const min = minimo === '' ? null : Number(minimo);
@@ -236,31 +217,22 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
 
   return (
     <>
-      <header className="encabezado">
-        <div className="encabezado-interior">
-          <div className="marca"><ShoppingBag size={30} strokeWidth={1.9} /><span>UnivalleShop</span></div>
-          <nav className="navegacion" aria-label="Navegación principal">
-            <a className="nav-inactivo" href="/inicio">Inicio</a>
-            <span className="nav-activo" aria-current="page">Catálogo</span>
-            <a className="nav-inactivo" href="/pedidos">Mis pedidos</a>
-          </nav>
-          <label className="buscador"><Search size={21} /><input type="search" placeholder="Buscar productos..." aria-label="Buscar productos" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} /></label>
-          <div className="iconos-usuario">
-            <span title="Perfil pendiente de integrar" aria-label="Perfil pendiente de integrar"><UserRound size={25} /></span>
-            <a href="/carrito" className="carrito" aria-label={`Carrito, ${unidadesCarrito} productos`} draggable={false}>
-              <ShoppingCart size={26} />
-              <span className="carrito-numero">{unidadesCarrito}</span>
-            </a>
-          </div>
-        </div>
-      </header>
-
       <section className="banner" aria-label="Bienvenida a UnivalleShop">
         <div className="banner-interior">
           <div className="banner-simbolo"><GraduationCap size={42} strokeWidth={1.4} /></div>
           <div className="banner-texto">
             <h1>Encuentra lo que necesitas</h1>
           </div>
+          <label className="buscador">
+            <Search size={21} aria-hidden="true" />
+            <input
+              type="search"
+              placeholder="Buscar productos..."
+              aria-label="Buscar productos"
+              value={busqueda}
+              onChange={(evento) => setBusqueda(evento.target.value)}
+            />
+          </label>
         </div>
       </section>
 
@@ -310,7 +282,7 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
           </section>
         </div>
       </main>
-      {detalleId && <DetalleProducto producto={detalle} cargando={cargandoDetalle} error={detalleError} onCerrar={() => setDetalleId(null)} onAgregar={agregarAlCarritoDesdeDetalle} />}
+      {detalleId && <DetalleProducto producto={detalle} cargando={cargandoDetalle} error={detalleError} onCerrar={() => setDetalleId(null)} onAgregar={agregarAlCarrito} />}
     </>
   );
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Package } from 'lucide-react';
-import Marca from '../../../../../shared/ui/Marca.jsx';
 import './Pedidos.css';
 
 const moneda = new Intl.NumberFormat('es-CO', {
@@ -62,94 +61,81 @@ export default function MisPedidos({ listarPedidos, verPedido }) {
   }
 
   return (
-    <div className="tienda-inicio">
-      <header className="tienda-barra">
-        <a href="/inicio" draggable={false}><Marca /></a>
+    <main className="pedidos-contenedor">
+      <h1>Mis pedidos</h1>
+      <p className="pedidos-subtitulo">Consulta el historial y el detalle de tus compras.</p>
 
-        <nav aria-label="Navegación principal">
-          <a href="/inicio" draggable={false}>Inicio</a>
-          <a href="/catalogo" draggable={false}>Catálogo</a>
-          <a href="/pedidos" aria-current="page" draggable={false}>Mis pedidos</a>
-          <a href="/carrito" draggable={false}>Carrito</a>
-        </nav>
-      </header>
+      {confirmado && (
+        <p role="status" className="pedido-mensaje pedido-mensaje-exito">
+          Pedido confirmado. Su número de referencia es {confirmado.slice(-8).toUpperCase()}.
+        </p>
+      )}
+      {error && <p role="alert" className="pedido-mensaje pedido-mensaje-error">{error}</p>}
+      {cargando && <p role="status">Cargando pedidos…</p>}
 
-      <main className="pedidos-contenedor">
-        <h1>Mis pedidos</h1>
-        <p className="pedidos-subtitulo">Consulta el historial y el detalle de tus compras.</p>
+      {!cargando && pedidos.length === 0 && (
+        <div className="pedido-vacio">
+          <Package size={44} strokeWidth={1.4} />
+          <p>Aún no tienes pedidos.</p>
+          <a className="tienda-accion" href="/catalogo">Explorar el catálogo</a>
+        </div>
+      )}
 
-        {confirmado && (
-          <p role="status" className="pedido-mensaje pedido-mensaje-exito">
-            Pedido confirmado. Su número de referencia es {confirmado.slice(-8).toUpperCase()}.
-          </p>
-        )}
-        {error && <p role="alert" className="pedido-mensaje pedido-mensaje-error">{error}</p>}
-        {cargando && <p role="status">Cargando pedidos…</p>}
-
-        {!cargando && pedidos.length === 0 && (
-          <div className="pedido-vacio">
-            <Package size={44} strokeWidth={1.4} />
-            <p>Aún no tienes pedidos.</p>
-            <a className="tienda-accion" href="/catalogo">Explorar el catálogo</a>
-          </div>
-        )}
-
-        {!cargando && pedidos.length > 0 && (
-          <div className="pedidos-listado">
-            {pedidos.map((pedido) => (
-              <article className="pedido-tarjeta" key={pedido.id}>
-                <div className="pedido-cabecera">
-                  <div>
-                    <strong>Pedido #{pedido.id.slice(-8).toUpperCase()}</strong>
-                    <span>{fecha(pedido.createdAt)}</span>
-                  </div>
-                  <span className={`pedido-estado estado-${pedido.estado}`}>
-                    {ETIQUETAS[pedido.estado] ?? pedido.estado}
-                  </span>
-                  <strong className="pedido-total">{moneda.format(pedido.total)}</strong>
-                  <button
-                    type="button"
-                    className="boton-rojo"
-                    disabled={cargandoDetalle && detalleId === pedido.id}
-                    onClick={() => {
-                      if (detalleId === pedido.id) {
-                        setDetalleId(null); // Cierra el detalle si ya está abierto
-                      } else {
-                        abrirDetalle(pedido.id);
-                      }
-                    }}
-                  >
-                    {detalleId === pedido.id && !cargandoDetalle ? 'Ocultar detalle' : 'Ver detalle'}
-                  </button>
+      {!cargando && pedidos.length > 0 && (
+        <div className="pedidos-listado">
+          {pedidos.map((pedido) => (
+            <article className="pedido-tarjeta" key={pedido.id}>
+              <div className="pedido-cabecera">
+                <div>
+                  <strong>Pedido #{pedido.id.slice(-8).toUpperCase()}</strong>
+                  <span>{fecha(pedido.createdAt)}</span>
                 </div>
+                <span className={`pedido-estado estado-${pedido.estado}`}>
+                  {ETIQUETAS[pedido.estado] ?? pedido.estado}
+                </span>
+                <strong className="pedido-total">{moneda.format(pedido.total)}</strong>
+                <button
+                  type="button"
+                  className="boton-rojo"
+                  disabled={cargandoDetalle && detalleId === pedido.id}
+                  onClick={() => {
+                    if (detalleId === pedido.id) {
+                      setDetalleId(null); // Cierra el detalle si ya está abierto
+                    } else {
+                      abrirDetalle(pedido.id);
+                    }
+                  }}
+                >
+                  {detalleId === pedido.id && !cargandoDetalle ? 'Ocultar detalle' : 'Ver detalle'}
+                </button>
+              </div>
 
-                {detalleId === pedido.id && (
-                  <div className="pedido-detalle">
-                    {cargandoDetalle && <p role="status">Cargando detalle…</p>}
-                    {!cargandoDetalle && detalle && (
-                      <>
-                        {detalle.items.map((item) => (
-                          <div className="pedido-linea" key={item.productoId}>
-                            <div className="pedido-linea-texto">
-                              <strong>{item.nombre}</strong>
-                              <span>{item.cantidad} × {moneda.format(item.precioUnitario)}</span>
-                            </div>
-                            <strong className="pedido-linea-subtotal">{moneda.format(item.subtotal)}</strong>
+              {detalleId === pedido.id && (
+                <div className="pedido-detalle">
+                  {cargandoDetalle && <p role="status">Cargando detalle…</p>}
+                  {!cargandoDetalle && detalle && (
+                    <>
+                      {detalle.items.map((item) => (
+                        <div className="pedido-linea" key={item.productoId}>
+                          <div className="pedido-linea-texto">
+                            <strong>{item.nombre}</strong>
+                            <span>{item.cantidad} × {moneda.format(item.precioUnitario)}</span>
                           </div>
-                        ))}
-                        <div className="pedido-detalle-totales">
-                          <span>Subtotal</span><strong>{moneda.format(detalle.subtotal)}</strong>
-                          <span>Total</span><strong>{moneda.format(detalle.total)}</strong>
+                          <strong className="pedido-linea-subtotal">{moneda.format(item.subtotal)}</strong>
                         </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </article>
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+                      ))}
+                      <div className="pedido-detalle-totales">
+                        <span>Subtotal</span><strong>{moneda.format(detalle.subtotal)}</strong>
+                        <span>Total</span><strong>{moneda.format(detalle.total)}</strong>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      )}
+    </main>
   );
 }

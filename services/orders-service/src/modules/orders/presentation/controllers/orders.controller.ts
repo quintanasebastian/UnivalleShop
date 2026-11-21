@@ -32,7 +32,7 @@ export class OrdersController {
   ) {}
 
   private requireUser(request: Request): string {
-    const usuarioId = this.sessionReader.readUserId(request.headers.cookie);
+    const usuarioId = this.sessionReader.readUserId(request.headers);
 
     if (!usuarioId) {
       throw new UnauthorizedException('Debes iniciar sesión para ver tus pedidos.');

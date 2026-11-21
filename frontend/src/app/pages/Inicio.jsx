@@ -1,9 +1,9 @@
-import { ArrowRight, Backpack, Laptop, Notebook, UserRound } from 'lucide-react';
+import { ArrowRight, Headphones, Laptop, NotebookPen, UserRound } from 'lucide-react';
 
 const categorias = [
   ['tecnologia', 'Tecnología', 'Para tus clases y proyectos', Laptop],
-  ['papeleria', 'Papelería', 'Apunta todas tus ideas', Notebook],
-  ['accesorios', 'Accesorios', 'Para acompañarte cada día', Backpack],
+  ['papeleria', 'Papelería', 'Apunta todas tus ideas', NotebookPen],
+  ['accesorios', 'Accesorios', 'Para acompañarte cada día', Headphones],
 ];
 
 export default function Inicio({ perfil }) {
@@ -16,11 +16,16 @@ export default function Inicio({ perfil }) {
           </span>
           <div>
             <strong>¡Hola, {perfil.nombres}!</strong>
-            <p>Bienvenido a tu tienda universitaria</p>
+            <p>Bienvenido/a a tu tienda universitaria</p>
           </div>
         </div>
 
-        <h1>Tu vida en la U. Todo en un mismo lugar.</h1>
+        <h1>
+          Tu vida en la U.{' '}
+          <span className="tienda-titulo-acento">
+            Todo en un mismo <span className="tienda-subrayado">lugar</span>.
+          </span>
+        </h1>
         <p className="tienda-intro">
           Encuentra lo que necesitas para estudiar, crear y llevar contigo al campus.
         </p>
@@ -47,10 +52,14 @@ export default function Inicio({ perfil }) {
         </section>
       </div>
 
-      <img
-        src="/interfaz/ardillaunivalle.png"
-        alt="Ardilla de Univalle con bolsas de compras y artículos universitarios"
-      />
+      <div className="tienda-mascota">
+        <img
+          src="/interfaz/ardilla.png"
+          alt="Ardilla de UnivalleShop caminando con su mochila y una bolsa de compras"
+          width="1345"
+          height="1169"
+        />
+      </div>
     </main>
   );
 }

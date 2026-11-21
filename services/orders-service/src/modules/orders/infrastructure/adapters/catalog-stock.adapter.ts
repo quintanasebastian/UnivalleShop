@@ -12,6 +12,8 @@ const CATALOG_SERVICE_URL = (
 
 const TIMEOUT_MS = Number(process.env.CATALOG_REQUEST_TIMEOUT_MS ?? 5000);
 
+const INTERNAL_TOKEN = process.env.INTERNAL_TOKEN;
+
 @Injectable()
 export class CatalogStockAdapter implements ProductStockPort {
   async decreaseStock(productoId: string, cantidad: number): Promise<void> {
@@ -34,7 +36,11 @@ export class CatalogStockAdapter implements ProductStockPort {
     try {
       response = await fetch(`${CATALOG_SERVICE_URL}${path}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          // Llamada interna entre servicios: el catálogo solo la acepta con este token.
+          ...(INTERNAL_TOKEN ? { 'x-internal-token': INTERNAL_TOKEN } : {}),
+        },
         body: JSON.stringify({ cantidad }),
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });

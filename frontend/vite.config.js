@@ -6,20 +6,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api/usuarios': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/usuarios/, ''),
-      },
-      '/api/pedidos': {
-        target: 'http://localhost:3003',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/pedidos/, ''),
-      },
+      // Todas las llamadas pasan por el API Gateway (punto de entrada único).
       '/api': {
-        target: 'http://localhost:3002',
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

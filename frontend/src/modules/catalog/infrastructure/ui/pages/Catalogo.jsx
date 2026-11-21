@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  CheckCircle2, ChevronRight, Filter,
-  GraduationCap, Package, Search, X,
+  CheckCircle2, Filter,
+  GraduationCap, Package, Search, ShoppingCart, X,
 } from 'lucide-react';
 import './Catalogo.css';
 
@@ -46,8 +46,37 @@ function ImagenProducto({ src, nombre, className = '' }) {
 
 }
 
-function TarjetaProducto({ producto, onVer }) {
+function TarjetaProducto({ producto, onVer, onAgregar }) {
   const disponible = producto.stock > 0;
+  const [estadoCarrito, setEstadoCarrito] = useState('');
+  const [error, setError] = useState('');
+  // Cada vez que se agrega, cambia la clave y se repite la animación del "+1".
+  const [pulsos, setPulsos] = useState(0);
+
+  useEffect(() => {
+    if (estadoCarrito !== 'agregado') return undefined;
+    const temporizador = setTimeout(() => setEstadoCarrito(''), 900);
+    return () => clearTimeout(temporizador);
+  }, [estadoCarrito, pulsos]);
+
+  async function agregar() {
+    setEstadoCarrito('agregando');
+    setError('');
+    try {
+      await onAgregar({
+        productoId: producto.id ?? producto._id,
+        nombre: producto.nombre,
+        precioUnitario: producto.precio,
+        cantidad: 1,
+      });
+      setPulsos((n) => n + 1);
+      setEstadoCarrito('agregado');
+    } catch (fallo) {
+      setEstadoCarrito('');
+      setError(fallo.message);
+    }
+  }
+
   return (
     <article className="producto">
       <ImagenProducto className="producto-imagen" src={producto.imagen} nombre={producto.nombre} />
@@ -58,9 +87,26 @@ function TarjetaProducto({ producto, onVer }) {
           {disponible ? 'Disponible' : 'Agotado'}
         </span>
         <strong className="precio">{moneda.format(producto.precio)}</strong>
-        <button className="boton-rojo" type="button" onClick={() => onVer(producto.id)}>
-          Ver producto <ChevronRight size={17} />
-        </button>
+        <div className="producto-acciones">
+          <button className="boton-rojo" type="button" onClick={() => onVer(producto.id)}>
+            Ver producto
+          </button>
+          <button
+            className={`boton-carrito ${estadoCarrito === 'agregado' ? 'agregado' : ''} ${disponible ? '' : 'agotado'}`}
+            type="button"
+            aria-label={`Agregar ${producto.nombre} al carrito`}
+            title={disponible ? 'Agregar al carrito' : 'Producto agotado'}
+            disabled={!disponible || estadoCarrito === 'agregando'}
+            onClick={agregar}
+          >
+            <ShoppingCart size={19} />
+            {pulsos > 0 && <span key={pulsos} className="boton-carrito-mas" aria-hidden="true">+1</span>}
+          </button>
+        </div>
+        <span className="solo-lectores" role="status">
+          {pulsos > 0 ? `${producto.nombre} agregado al carrito (${pulsos})` : ''}
+        </span>
+        {error && <p className="producto-aviso" role="alert">{error}</p>}
       </div>
     </article>
   );
@@ -278,7 +324,7 @@ export default function Catalogo({ categoriaInicial, obtenerProductos, obtenerPr
             {cargando && <div className="mensaje">Cargando productos del catálogo...</div>}
             {!cargando && error && <div className="mensaje error-mensaje"><p>{error}</p><button type="button" className="boton-rojo" onClick={() => setRecargar((n) => n + 1)}>Reintentar</button></div>}
             {!cargando && !error && visibles.length === 0 && <div className="mensaje"><Package size={38} /><p>No hay productos que coincidan con los filtros seleccionados.</p></div>}
-            {!cargando && !error && visibles.length > 0 && <div className="productos-grid">{visibles.map((p) => <TarjetaProducto key={p.id} producto={p} onVer={setDetalleId} />)}</div>}
+            {!cargando && !error && visibles.length > 0 && <div className="productos-grid">{visibles.map((p) => <TarjetaProducto key={p.id} producto={p} onVer={setDetalleId} onAgregar={agregarAlCarrito} />)}</div>}
           </section>
         </div>
       </main>

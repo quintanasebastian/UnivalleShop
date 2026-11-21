@@ -26,12 +26,11 @@ services:
     container_name: users-service
     restart: unless-stopped
 
-    ports:
-      - "3001:3001"
-
+    # Sin puerto publicado: solo se accede a través del api-gateway.
     environment:
       PORT: 3001
       MONGODB_URI: mongodb://users-mongodb:27017/univalle_shop_users
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-univalleshop-dev-internal-token}
 
     depends_on:
       users-mongodb:
@@ -62,12 +61,11 @@ services:
     container_name: catalog-service
     restart: unless-stopped
 
-    ports:
-      - "3002:3002"
-
+    # Sin puerto publicado: solo se accede a través del api-gateway.
     environment:
       PORT: 3002
       MONGODB_URI: mongodb://catalog-mongodb:27017/univalle_shop_catalog
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-univalleshop-dev-internal-token}
 
     depends_on:
       catalog-mongodb:
@@ -78,7 +76,7 @@ services:
         - CMD
         - node
         - -e
-        - "fetch('http://localhost:3002/products').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        - "fetch('http://localhost:3002/products', { headers: { 'x-internal-token': process.env.INTERNAL_TOKEN } }).then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -109,20 +107,49 @@ services:
     container_name: orders-service
     restart: unless-stopped
 
-    ports:
-      - "3003:3003"
-
+    # Sin puerto publicado: solo se accede a través del api-gateway.
     environment:
       PORT: 3003
       MONGODB_URI: mongodb://orders-mongodb:27017/univalle_shop_orders
       CATALOG_SERVICE_URL: http://catalog-service:3002
       CATALOG_REQUEST_TIMEOUT_MS: 5000
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-univalleshop-dev-internal-token}
 
     depends_on:
       orders-mongodb:
         condition: service_healthy
       catalog-service:
         condition: service_healthy
+
+  # Punto de entrada único: enruta /api/* y centraliza la seguridad.
+  # Es el único contenedor de la aplicación con puerto publicado.
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+
+    container_name: api-gateway
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      PORT: 8080
+      USERS_SERVICE_URL: http://users-service:3001
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+      ORDERS_SERVICE_URL: http://orders-service:3003
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-univalleshop-dev-internal-token}
+      # Correos de los administradores de la tienda, separados por comas.
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+
+    depends_on:
+      users-service:
+        condition: service_started
+      catalog-service:
+        condition: service_healthy
+      orders-service:
+        condition: service_started
 
 volumes:
   users-mongodb-data:

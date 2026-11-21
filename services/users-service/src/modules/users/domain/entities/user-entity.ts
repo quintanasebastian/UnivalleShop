@@ -1,4 +1,6 @@
-export type UserType = 'estudiante' | 'docente' | 'administrativo';
+import { normalizeInstitutionalEmail } from '../value-objects/institutional-email.js';
+
+export type UserType ='estudiante' | 'docente' | 'administrativo';
 
 export interface UserData {
   id: string;
@@ -37,11 +39,7 @@ export class User {
   ) {}
 
   static create(data: UserData): User {
-    const normalizedEmail = data.correo.trim().toLowerCase();
-
-    if (!/^[^\s@]+@correounivalle\.edu\.co$/.test(normalizedEmail)) {
-      throw new Error('El correo debe ser institucional de Univalle.');
-    }
+    const normalizedEmail = normalizeInstitutionalEmail(data.correo);
 
     if (!data.nombres.trim() || !data.apellidos.trim()) {
       throw new Error('Los nombres y apellidos son obligatorios.');

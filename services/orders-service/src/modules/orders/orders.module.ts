@@ -16,7 +16,7 @@ import { PRODUCT_STOCK_PORT } from './domain/ports/services/product-stock.port.j
 import { CartMongoRepositoryAdapter } from './infrastructure/adapters/cart-mongo.repository.adapter.js';
 import { CatalogStockAdapter } from './infrastructure/adapters/catalog-stock.adapter.js';
 import { OrderMongoRepositoryAdapter } from './infrastructure/adapters/order-mongo.repository.adapter.js';
-import { SessionTokenAdapter } from './infrastructure/adapters/session-token.adapter.js';
+import { GatewayIdentityAdapter } from './infrastructure/adapters/gateway-identity.adapter.js';
 import { CartSchema, CartMongoSchema } from './infrastructure/schemas/cart.schema.js';
 import {
   OrderSchema,
@@ -46,7 +46,7 @@ import { OrdersController } from './presentation/controllers/orders.controller.j
     },
     {
       provide: SESSION_READER,
-      useClass: SessionTokenAdapter,
+      useClass: GatewayIdentityAdapter,
     },
     {
       provide: PRODUCT_STOCK_PORT,

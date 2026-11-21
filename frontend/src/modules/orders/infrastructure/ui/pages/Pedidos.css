@@ -132,9 +132,9 @@
     color: var(--rojo, #c20e1a);
 }
 
-.pedido-resumen small {
-    color: var(--gris, #636363);
-    line-height: 1.45;
+.pedido-resumen .tienda-accion {
+    justify-content: center;
+    text-align: center;
 }
 
 .pedido-tarjeta {

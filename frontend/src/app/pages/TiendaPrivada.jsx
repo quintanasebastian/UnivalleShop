@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { LogOut } from 'lucide-react';
+import { House, LayoutGrid, LogOut, Package, ShoppingCart } from 'lucide-react';
 import Marca from '../../shared/ui/Marca.jsx';
 
 const enlaces = [
-  ['/inicio', 'Inicio'],
-  ['/catalogo', 'Catálogo'],
-  ['/pedidos', 'Mis pedidos'],
-  ['/carrito', 'Carrito'],
+  ['/inicio', 'Inicio', House],
+  ['/catalogo', 'Catálogo', LayoutGrid],
+  ['/pedidos', 'Mis pedidos', Package],
+  ['/carrito', 'Carrito', ShoppingCart],
 ];
 
 export default function TiendaPrivada({ ruta, obtenerCarrito, cerrarSesion, children }) {
@@ -50,7 +50,7 @@ export default function TiendaPrivada({ ruta, obtenerCarrito, cerrarSesion, chil
         <a className="tienda-barra-marca" href="/inicio" draggable={false}><Marca /></a>
 
         <nav aria-label="Navegación principal">
-          {enlaces.map(([href, etiqueta]) => {
+          {enlaces.map(([href, etiqueta, Icono]) => {
             const esCarrito = href === '/carrito';
             return (
               <a
@@ -60,6 +60,7 @@ export default function TiendaPrivada({ ruta, obtenerCarrito, cerrarSesion, chil
                 aria-label={esCarrito ? `Carrito, ${unidades} ${unidades === 1 ? 'producto' : 'productos'}` : undefined}
                 draggable={false}
               >
+                <Icono className="tienda-barra-icono" aria-hidden="true" />
                 {etiqueta}
                 {esCarrito && <span className="tienda-conteo" aria-hidden="true">{unidades > 99 ? '99+' : unidades}</span>}
               </a>

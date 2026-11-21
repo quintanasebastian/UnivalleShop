@@ -3,6 +3,7 @@ import {
   User,
   UserType,
 } from '../../domain/entities/user-entity.js';
+import { normalizeInstitutionalEmail } from '../../domain/value-objects/institutional-email.js';
 
 import { USER_REPOSITORY } from '../../domain/ports/repositories/user.repository.js';
 import type { UserRepository } from '../../domain/ports/repositories/user.repository.js';
@@ -31,11 +32,8 @@ export class CreateUserUseCase {
   ) {}
 
   async execute(input: CreateUserInput): Promise<User> {
-    const correo = input.correo.trim().toLowerCase();
-
-    if (!/^[^\s@]+@correounivalle\.edu\.co$/.test(correo)) {
-      throw new Error('Debes utilizar un correo institucional de Univalle.');
-    }
+    // Se valida antes de consultar la BD; la regla vive solo en el dominio.
+    const correo = normalizeInstitutionalEmail(input.correo);
 
     const existingUser = await this.userRepository.findByEmail(correo);
 

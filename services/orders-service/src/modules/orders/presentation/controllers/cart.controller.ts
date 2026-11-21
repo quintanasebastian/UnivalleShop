@@ -34,7 +34,7 @@ export class CartController {
   ) {}
 
   private requireUser(request: Request): string {
-    const usuarioId = this.sessionReader.readUserId(request.headers.cookie);
+    const usuarioId = this.sessionReader.readUserId(request.headers);
 
     if (!usuarioId) {
       throw new UnauthorizedException('Debes iniciar sesión para usar el carrito.');

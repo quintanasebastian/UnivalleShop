@@ -29,6 +29,19 @@ import { FindAllUsersUseCase } from './application/use-cases/find-all-users.use-
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case.js';
 import { DeactivateUserUseCase } from './application/use-cases/deactivate-user.use-case.js';
 
+import { StartSessionUseCase } from './application/use-cases/start-session.use-case.js';
+import { ValidateSessionUseCase } from './application/use-cases/validate-session.use-case.js';
+import { EndSessionUseCase } from './application/use-cases/end-session.use-case.js';
+
+import { SESSION_REPOSITORY } from './domain/ports/repositories/session.repository.js';
+import { TOKEN_GENERATOR } from './domain/ports/security/token-generator.port.js';
+import { SessionMongoRepositoryAdapter } from './infrastructure/adapters/session-mongo.repository.adapter.js';
+import { CryptoTokenGeneratorAdapter } from './infrastructure/adapters/crypto-token-generator.adapter.js';
+import {
+  SessionSchema,
+  SessionMongoSchema,
+} from './infrastructure/schemas/session.schema.js';
+
 import { UsersController } from './presentation/controllers/users.controller.js';
 import { SessionController } from './presentation/controllers/session.controller.js';
 
@@ -38,6 +51,10 @@ import { SessionController } from './presentation/controllers/session.controller
       {
         name: UserSchema.name,
         schema: UserMongoSchema,
+      },
+      {
+        name: SessionSchema.name,
+        schema: SessionMongoSchema,
       },
     ]),
   ],
@@ -53,6 +70,14 @@ import { SessionController } from './presentation/controllers/session.controller
       provide: PASSWORD_HASHER,
       useClass: BcryptPasswordHasherAdapter,
     },
+    {
+      provide: SESSION_REPOSITORY,
+      useClass: SessionMongoRepositoryAdapter,
+    },
+    {
+      provide: TOKEN_GENERATOR,
+      useClass: CryptoTokenGeneratorAdapter,
+    },
 
     CreateUserUseCase,
     LoginUserUseCase,
@@ -60,6 +85,9 @@ import { SessionController } from './presentation/controllers/session.controller
     FindAllUsersUseCase,
     UpdateUserUseCase,
     DeactivateUserUseCase,
+    StartSessionUseCase,
+    ValidateSessionUseCase,
+    EndSessionUseCase,
   ],
 
   exports: [

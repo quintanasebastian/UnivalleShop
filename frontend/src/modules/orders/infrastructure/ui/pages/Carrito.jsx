@@ -111,7 +111,6 @@ export default function Carrito({
             <button className="tienda-accion" type="button" disabled={procesando} onClick={confirmar}>
               {procesando ? 'Procesando…' : 'Confirmar pedido'}
             </button>
-            <small>El pedido queda en estado pendiente y podrás verlo en “Mis pedidos”.</small>
           </aside>
         </div>
       )}

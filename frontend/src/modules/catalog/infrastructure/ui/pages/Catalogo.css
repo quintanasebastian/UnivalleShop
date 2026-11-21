@@ -230,8 +230,8 @@
 }
 
 .producto-imagen {
-    width: 49%;
-    flex: 0 0 49%;
+    width: 44%;
+    flex: 0 0 44%;
     height: 185px;
     border-radius: 10px;
     object-fit: cover;
@@ -304,6 +304,146 @@
 
 .boton-rojo:hover {
     background: #980c15;
+}
+
+/* Acciones de cada producto: ver detalle y agregar al carrito */
+.producto-acciones {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.producto-acciones .boton-rojo {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+    padding: 9px 6px;
+    font-size: 12.5px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.boton-carrito {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 38px;
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border: 1.5px solid var(--rojo);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--rojo);
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.boton-carrito:hover:not(:disabled) {
+    background: #fdeaec;
+}
+
+/* Al agregar: el botón se rellena de rojo, rebota y el carrito se sacude */
+.boton-carrito.agregado {
+    background: var(--rojo);
+    color: #fff;
+    animation: carrito-rebote 450ms cubic-bezier(.34, 1.56, .64, 1);
+    box-shadow: 0 0 0 0 rgb(194 14 26 / 45%);
+}
+
+.boton-carrito.agregado svg {
+    animation: carrito-sacudida 450ms ease;
+}
+
+.boton-carrito.agregado::after {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    animation: carrito-onda 650ms ease-out;
+    pointer-events: none;
+}
+
+/* "+1" que sube y se desvanece sobre el botón */
+.boton-carrito-mas {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    padding: 1px 6px;
+    border-radius: 99px;
+    background: var(--rojo);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    pointer-events: none;
+    opacity: 0;
+    animation: carrito-mas 800ms ease-out;
+}
+
+.boton-carrito:disabled:not(.agregado) {
+    cursor: default;
+}
+
+.boton-carrito.agotado {
+    border-color: #d6d6da;
+    color: #a3a3a8;
+    background: #f5f5f6;
+    cursor: not-allowed;
+}
+
+@keyframes carrito-rebote {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+
+@keyframes carrito-sacudida {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-14deg); }
+    55% { transform: rotate(10deg); }
+    80% { transform: rotate(-4deg); }
+}
+
+@keyframes carrito-onda {
+    from { box-shadow: 0 0 0 0 rgb(194 14 26 / 45%); }
+    to { box-shadow: 0 0 0 10px rgb(194 14 26 / 0%); }
+}
+
+@keyframes carrito-mas {
+    0% { opacity: 0; transform: translate(-50%, 6px) scale(.8); }
+    20% { opacity: 1; transform: translate(-50%, -2px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -22px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boton-carrito.agregado,
+    .boton-carrito.agregado svg,
+    .boton-carrito.agregado::after,
+    .boton-carrito-mas {
+        animation: none;
+    }
+}
+
+.producto-aviso {
+    margin: -4px 0 0;
+    color: #8f2430;
+    font-size: 12px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* Texto solo para lectores de pantalla */
+.solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .mensaje {

@@ -18,6 +18,7 @@ import { RestoreProductStockUseCase } from './application/use-cases/restore-prod
 import { UpdateProductUseCase } from './application/use-cases/update-product.use-case.js';
 import { DeleteProductUseCase } from './application/use-cases/delete-product.use-case.js';
 
+import { InitialCatalogLoader } from './infrastructure/seed/initial-catalog.loader.js';
 import { ProductsController } from './presentation/controllers/products.controller.js';
 
 @Module({
@@ -39,6 +40,7 @@ import { ProductsController } from './presentation/controllers/products.controll
     },
 
     CreateProductUseCase,
+    InitialCatalogLoader,
     FindAllProductsUseCase,
     FindProductByIdUseCase,
     UpdateProductUseCase,

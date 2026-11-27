@@ -13,6 +13,8 @@ npm run dev
 
 La aplicación abre en `http://localhost:5173` y se conecta al `api-gateway` en el puerto `8080` (debe estar corriendo con `docker compose up`).
 
+Al levantar el backend por primera vez con `docker compose up -d --build`, Catálogo crea ocho productos de demostración en MongoDB y usa las imágenes incluidas en `public/productos`. Inicia sesión y abre **Catálogo** para verlos.
+
 ## Estructura
 
 El proyecto está organizado por módulos siguiendo arquitectura hexagonal:

@@ -15,6 +15,7 @@ import type {
 import type { ProductRepository } from '../../domain/ports/repositories/product.repository.js';
 
 import {
+  PRODUCT_NAME_COLLATION,
   ProductSchema,
   ProductMongoDocument,
 } from '../schemas/product.schema.js';
@@ -100,7 +101,7 @@ export class ProductMongoRepositoryAdapter implements ProductRepository {
           $regex: new RegExp(`^${escapedName}$`, 'i'),
         },
       })
-      .collation({ locale: 'es', strength: 2 })
+      .collation(PRODUCT_NAME_COLLATION)
       .exec();
 
     return document ? this.toDomain(document as ProductMongoDocument) : null;

@@ -34,6 +34,8 @@ src/modules/catalog/
 | `PORT`        | `3002`                                                 |
 | `MONGODB_URI` | `mongodb://localhost:27017/univalle_shop_catalog`      |
 
+Con Docker Compose, `CATALOG_SEED_ENABLED` vale `true` por defecto. Catálogo registra ocho productos de demostración al inicializar la base. Si encuentra un producto con el mismo nombre o imagen, conserva su ficha y sus existencias. Una vez terminada la carga, los reinicios respetan las ediciones y los productos eliminados. Configura `CATALOG_SEED_ENABLED=false` en el `.env` raíz para desactivar la carga.
+
 ## Endpoints
 
 | Método   | Ruta                                   | Descripción                                |

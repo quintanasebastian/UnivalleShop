@@ -37,11 +37,12 @@ export class ProductSchema {
 }
 
 export const ProductMongoSchema = SchemaFactory.createForClass(ProductSchema);
+export const PRODUCT_NAME_COLLATION = { locale: 'es', strength: 2 } as const;
 
 ProductMongoSchema.index(
   { nombre: 1 },
   {
     unique: true,
-    collation: { locale: 'es', strength: 2 },
+    collation: PRODUCT_NAME_COLLATION,
   },
 );

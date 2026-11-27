@@ -21,7 +21,7 @@ services:
   users-service:
     build:
       context: ./services/users-service
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
 
     container_name: users-service
     restart: unless-stopped
@@ -65,6 +65,7 @@ services:
     environment:
       PORT: 3002
       MONGODB_URI: mongodb://catalog-mongodb:27017/univalle_shop_catalog
+      CATALOG_SEED_ENABLED: ${CATALOG_SEED_ENABLED:-true}
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:-univalleshop-dev-internal-token}
 
     depends_on:
